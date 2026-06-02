@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18. Századi Szabasulószoba</title>
+    <style>
+        body {
+            background-color: #1a1105;
+            background-image: radial-gradient(#2c1d0c 20%, #0f0a04 80%);
+            color: #f4ecd8;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Díszes sarok a betűknek */
+        .corner-box {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(44, 29, 12, 0.9);
+            padding: 15px 25px;
+            border: 2px solid #c5a059;
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.7), inset 0 0 10px rgba(197, 160, 89, 0.2);
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            z-index: 10;
+            color: #e2b767;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        .letter-slot {
+            display: inline-block;
+            width: 32px;
+            text-align: center;
+            border-bottom: 2px solid #c5a059;
+            margin: 0 4px;
+            font-weight: bold;
+            min-height: 24px;
+        }
+
+        /* A fő pergamen tekercs */
+        .parchment {
+            background: #f1e4c3;
+            background-image: linear-gradient(to right, #e4d3a6 0%, #f1e4c3 10%, #f1e4c3 90%, #e4d3a6 100%);
+            color: #2b1d0c;
+            width: 85%;
+            max-width: 650px;
+            padding: 50px 40px;
+            border: 12px double #614319;
+            outline: 3px solid #c5a059;
+            outline-offset: -15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            text-align: center;
+            position: relative;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .parchment::before, .parchment::after {
+            content: "❦ ⚜ ❦";
+            display: block;
+            font-size: 1.5rem;
+            color: #614319;
+            margin: 15px 0;
+            letter-spacing: 5px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-family: 'Playfair Display', 'Georgia', serif;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #4a3211;
+            border-bottom: 1px dashed #614319;
+            padding-bottom: 15px;
+            font-style: italic;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            margin: 30px 0;
+            line-height: 1.7;
+            font-weight: bold;
+            min-height: 40px;
+        }
+
+        /* Input mezők és Gombok */
+        .input-container {
+            margin-top: 25px;
+            margin-bottom: 20px;
+        }
+
+        .input-wrapper {
+            margin-bottom: 12px;
+        }
+
+        input[type="text"] {
+            background: #faf4e5;
+            border: 1px solid #614319;
+            border-bottom: 2px solid #c5a059;
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            font-family: inherit;
+            color: #2b1d0c;
+            width: 75%;
+            text-align: center;
+            outline: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 3px;
+            margin: 5px 0;
+        }
+
+        button {
+            background: #4a3211;
+            color: #f4ecd8;
+            border: 2px solid #c5a059;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 3px;
+        }
+
+        button:hover {
+            background: #c5a059;
+            color: #2b1d0c;
+            box-shadow: 0 0 10px rgba(197, 160, 89, 0.5);
+        }
+
+        /* Visszajelzések */
+        .feedback {
+            margin-top: 25px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            height: 35px;
+        }
+        .correct { color: #27ae60; font-style: italic; }
+        .incorrect { color: #c0392b; }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="letters-container" class="corner-box hidden">
+        Titkos szó: 
+        <span id="word-display">
+            <span class="letter-slot"></span>
+            <span class="letter-slot"></span>
+            <span class="letter-slot"></span>
+            <span class="letter-slot"></span>
+            <span class="letter-slot"></span>
+            <span class="letter-slot"></span>
+        </span>
+    </div>
+
+    <div class="parchment" id="game-card">
+        
+        <div id="start-screen">
+            <h1>18. Századi Szabadulósziba</h1>
+            <div class="question-text">Kérlek, add meg a csapat neved a rejtvények megkezdése előtt!</div>
+            <div class="input-container">
+                <input type="text" id="player-name-input" placeholder="Írd ide a csapat neved..." autocomplete="off"><br>
+                <button onclick="startGame()">Játék indítása</button>
+            </div>
+            <div class="feedback" id="start-feedback"></div>
+        </div>
+
+        <div id="quiz-screen" class="hidden">
+            <h1 id="title">Próbatétel: I. Feladat</h1>
+            <div class="question-text" id="question-box">Betöltés...</div>
+            
+            <div class="input-container" id="inputs-area">
+                </div>
+            
+            <button onclick="checkAnswer()">Válasz Beküldése</button>
+            <div class="feedback" id="feedback-box"></div>
+        </div>
+
+        <div id="end-screen" class="hidden">
+            <h1 style="color: #27ae60;">Sikeres Próbatétel!</h1>
+            <div class="question-text" id="end-message"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // A kért felépítés a pontos válaszokkal és a megszerzendő betűkkel
+        const questions = [
+            { q: "Írd ide az 1. feladat válaszát!", a: ["g"], letter: "G" },
+            { q: "Írd ide a 2. feladat válaszát!", a: ["20"], letter: "Y" },
+            { q: "Írd ide a 3. feladat válaszát! (4 válaszos)", a: ["Mária Terézia", "Kopernikusz", "Gőzgép", "Descartes"], letter: "O" },
+            { q: "Írd ide a 4. feladat válaszát! (2 válaszos)", a: ["Amerikai Egyesült Államok", "Alkotmányos Monarchia"], letter: "M" },
+            { q: "Írd ide az 5. feladat válaszát! (4 válaszos)", a: ["július 4", "Lafayette", "Szeretet", "Lafayette"], letter: "O" },
+            { q: "Írd ide a 6. feladat válaszát!", a: ["John Locke"], letter: "R" }
+        ];
+
+        let playerName = "";
+        let currentQuestionIndex = 0;
+
+        // Elemek
+        const startScreen = document.getElementById("start-screen");
+        const quizScreen = document.getElementById("quiz-screen");
+        const endScreen = document.getElementById("end-screen");
+        const lettersContainer = document.getElementById("letters-container");
+        
+        const questionBox = document.getElementById("question-box");
+        const inputsArea = document.getElementById("inputs-area");
+        const feedbackBox = document.getElementById("feedback-box");
+        const titleDisplay = document.getElementById("title");
+        const letterSlots = document.querySelectorAll(".letter-slot");
+
+        // JÁTÉK INDÍTÁSA
+        function startGame() {
+            const nameInput = document.getElementById("player-name-input");
+            playerName = nameInput.value.trim();
+
+            if (playerName === "") {
+                document.getElementById("start-feedback").textContent = "Kérlek, írj be egy érvényes nevet!";
+                document.getElementById("start-feedback").className = "feedback incorrect";
+                return;
+            }
+
+            startScreen.classList.add("hidden");
+            quizScreen.classList.remove("hidden");
+            lettersContainer.classList.remove("hidden");
+
+            showQuestion();
+        }
+
+        // KÉRDÉS ÉS MEZŐK GENERÁLÁSA
+        function showQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const currentData = questions[currentQuestionIndex];
+                
+                titleDisplay.textContent = `Próbatétel: ${currentQuestionIndex + 1}. Feladat`;
+                questionBox.textContent = currentData.q;
+                feedbackBox.textContent = "";
+                
+                // Töröljük az előző beviteli mezőket
+                inputsArea.innerHTML = "";
+                
+                // Legenerálunk annyi mezőt, ahány válasz elvárt ennél a kérdésnél
+                currentData.a.forEach((ans, index) => {
+                    const wrapper = document.createElement("div");
+                    wrapper.className = "input-wrapper";
+                    
+                    const input = document.createElement("input");
+                    input.type = "text";
+                    input.className = "quiz-input";
+                    input.autocomplete = "off";
+                    
+                    // Ha több mező van, kaphatnak segítő placeholder-t (pl. 1. válasz, 2. válasz)
+                    if (currentData.a.length > 1) {
+                        input.placeholder = `${index + 1}. válasz...`;
+                    } else {
+                        input.placeholder = "Írd ide a választ...";
+                    }
+                    
+                    wrapper.appendChild(input);
+                    inputsArea.appendChild(input);
+                });
+
+                // Fókusz az első mezőre
+                const firstInput = inputsArea.querySelector(".quiz-input");
+                if (firstInput) firstInput.focus();
+                
+                // Enter billentyű esemény hozzáadása a mezőkhöz
+                const allInputs = inputsArea.querySelectorAll(".quiz-input");
+                allInputs.forEach((input, idx) => {
+                    input.addEventListener("keypress", function(event) {
+                        if (event.key === "Enter") {
+                            // Ha nem az utolsó mezőben állunk, ugorjon a következőre, különben küldje be
+                            if (idx < allInputs.length - 1) {
+                                allInputs[idx + 1].focus();
+                            } else {
+                                checkAnswer();
+                            }
+                        }
+                    });
+                });
+
+            } else {
+                gameOver();
+            }
+        }
+
+        // VÁLASZ ELLENŐRZÉSE
+        function checkAnswer() {
+            const currentData = questions[currentQuestionIndex];
+            const inputElements = inputsArea.querySelectorAll(".quiz-input");
+            
+            let allCorrect = true;
+
+            // Végigellenőrizzük az összes mezőt a mintákkal összevetve
+            inputElements.forEach((element, idx) => {
+                const userVal = element.value.trim().toLowerCase();
+                const correctVal = currentData.a[idx].trim().toLowerCase();
+                
+                if (userVal !== correctVal) {
+                    allCorrect = false;
+                }
+            });
+
+            if (allCorrect) {
+                // Letiltjuk a gépelést a váltásig
+                inputElements.forEach(el => el.disabled = true);
+                
+                feedbackBox.textContent = "A válasz helyes.";
+                feedbackBox.className = "feedback correct";
+
+                // Betű megjelenítése a sarokban
+                letterSlots[currentQuestionIndex].textContent = currentData.letter;
+                letterSlots[currentQuestionIndex].style.color = "#4a3211";
+
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    showQuestion();
+                }, 1500);
+
+            } else {
+                feedbackBox.textContent = "A válasz helytelen.";
+                feedbackBox.className = "feedback incorrect";
+            }
+        }
+
+        // JÁTÉK VÉGE
+        function gameOver() {
+            quizScreen.classList.add("hidden");
+            endScreen.classList.remove("hidden");
+            
+            const endMessage = document.getElementById("end-message");
+            endMessage.innerHTML = `Kedves <strong>${playerName}</strong>!<br>Sikeresen megfejtetted az összes rejtvényt!<br>A keresett titkos szó: <strong style="font-size: 2rem; color: #4a3211; display: block; margin-top: 15px;">GYOMOR</strong>`;
+        }
+
+        // Kezdőképernyő enter figyelése
+        document.getElementById("player-name-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") startGame();
+        });
+    </script>
+</body>
+</html>
