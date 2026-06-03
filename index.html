@@ -96,18 +96,16 @@
         .input-container {
             margin-top: 25px;
             margin-bottom: 20px;
-        }
-
-        .input-wrapper {
-            margin-bottom: 12px;
+            max-height: 240px;
+            overflow-y: auto; /* Ha sok a mező, görgethetővé válik a pergamen borítása nélkül */
         }
 
         input[type="text"] {
             background: #faf4e5;
             border: 1px solid #614319;
             border-bottom: 2px solid #c5a059;
-            padding: 10px 15px;
-            font-size: 1.2rem;
+            padding: 8px 15px;
+            font-size: 1.1rem;
             font-family: inherit;
             color: #2b1d0c;
             width: 75%;
@@ -184,8 +182,7 @@
             <h1 id="title">Próbatétel: I. Feladat</h1>
             <div class="question-text" id="question-box">Betöltés...</div>
             
-            <div class="input-container" id="inputs-area">
-                </div>
+            <div class="input-container" id="inputs-area"></div>
             
             <button onclick="checkAnswer()">Válasz Beküldése</button>
             <div class="feedback" id="feedback-box"></div>
@@ -203,10 +200,10 @@
         const questions = [
             { q: "Írd ide az 1. feladat válaszát!", a: ["g"], letter: "G" },
             { q: "Írd ide a 2. feladat válaszát!", a: ["20"], letter: "Y" },
-            { q: "Írd ide a 3. feladat válaszát! (4 válaszos)", a: ["Mária Terézia", "Kopernikusz", "Gőzgép", "Descartes"], letter: "O" },
-            { q: "Írd ide a 4. feladat válaszát! (2 válaszos)", a: ["Amerikai Egyesült Államok", "Alkotmányos Monarchia"], letter: "M" },
-            { q: "Írd ide az 5. feladat válaszát! (4 válaszos)", a: ["július 4", "Lafayette", "Szeretet", "Lafayette"], letter: "O" },
-            { q: "Írd ide a 6. feladat válaszát!", a: ["John Locke"], letter: "R" }
+            { q: "Írd ide a 3. feladat válaszát! (6 válaszos)", a: ["Mária Terézia", "Kopernikusz", "Gőzgép", "Descartes", "Amerikai Egyesült Államok", "Alkotmányos Monarchia"], letter: "O" },
+            { q: "Írd ide a 4. feladat válaszát! (4 válaszos)", a: ["Július 4", "Lafayette", "Gőzgép", "Lafayette"], letter: "M" },
+            { q: "Írd ide az 5. feladat válaszát!", a: ["John Locke"], letter: "O" },
+            { q: "Írd ide a 6. feladat válaszát!", a: ["r"], letter: "R" }
         ];
 
         let playerName = "";
@@ -256,22 +253,18 @@
                 
                 // Legenerálunk annyi mezőt, ahány válasz elvárt ennél a kérdésnél
                 currentData.a.forEach((ans, index) => {
-                    const wrapper = document.createElement("div");
-                    wrapper.className = "input-wrapper";
-                    
                     const input = document.createElement("input");
                     input.type = "text";
                     input.className = "quiz-input";
                     input.autocomplete = "off";
                     
-                    // Ha több mező van, kaphatnak segítő placeholder-t (pl. 1. válasz, 2. válasz)
+                    // Ha több mező van, kaphatnak segítő placeholder-t
                     if (currentData.a.length > 1) {
                         input.placeholder = `${index + 1}. válasz...`;
                     } else {
                         input.placeholder = "Írd ide a választ...";
                     }
                     
-                    wrapper.appendChild(input);
                     inputsArea.appendChild(input);
                 });
 
